@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // --- Global Safety Net ---
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Global Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'USER') == 'ADMIN')
+      );
+    }
+
+    // --- Users Collection ---
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      
+      allow create: if isOwner(userId) && 
+                      incoming().uid == userId &&
+                      incoming().balance == 0 &&
+                      incoming().role == 'USER';
+      
+      allow update: if isAdmin() || (
+        isOwner(userId) && 
+        incoming().role == existing().role &&
+        incoming().balance == existing().balance &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['email'])
+      );
+    }
+
+    // --- Deposit Requests ---
+    match /deposit_requests/{reqId} {
+      allow get: if isSignedIn() && (isOwner(existing().userId) || isAdmin());
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      
+      allow create: if isSignedIn() && 
+                      incoming().userId == request.auth.uid &&
+                      incoming().status == 'PENDING';
+      
+      allow update: if isAdmin() && 
+                      incoming().diff(existing()).affectedKeys().hasOnly(['status', 'processedAt']);
+    }
+
+    // --- Purchased Cards ---
+    match /purchased_cards/{purchaseId} {
+      allow get: if isSignedIn() && (isOwner(existing().userId) || isAdmin());
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      
+      allow create: if isSignedIn() && 
+                      incoming().userId == request.auth.uid &&
+                      incoming().price is number;
+      
+      allow update, delete: if isAdmin();
+    }
+
+    // --- Explicit Admins ---
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+    }
+  }
+}

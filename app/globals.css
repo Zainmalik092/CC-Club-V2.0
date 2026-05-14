@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+  --primary: #FFD700;
+  --secondary: #0c0c0c;
+  --border: #222222;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+@theme {
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-border: var(--border);
+}
+
+.minimal-card {
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.minimal-button {
+  @apply px-4 py-2 rounded-sm transition-all duration-200 text-sm font-medium uppercase tracking-wider;
+}
+
+.minimal-input {
+  @apply bg-black border border-neutral-800 rounded-sm px-4 py-2 text-white focus:border-yellow-500 outline-none transition-colors;
+}

@@ -14,7 +14,7 @@ export default function Deposit() {
   const [success, setSuccess] = useState(false);
   const [requests, setRequests] = useState<any[]>([]);
 
-  const WALLET_ADDRESS = '0x71C7656EC7ab88b098defB751B7401B5f6d8976F';
+  const WALLET_ADDRESS = '0x5B5f90701B17cF65cCFc70246A3604629752CCAB';
 
   const fetchRequests = async () => {
     if (!user) return;
@@ -80,9 +80,24 @@ export default function Deposit() {
             </h2>
             <div className="p-6 bg-neutral-900 border border-neutral-800 rounded-sm space-y-4">
               <p className="text-sm text-neutral-400 font-medium">
-                Send only <span className="text-white font-bold">ETH (ERC20)</span> or <span className="text-white font-bold">USDT (ERC20)</span> to the address below. 
+                Send only <span className="text-white font-bold">USDT (Bep20)</span> to the address below. 
                 After sending, provide your transaction hash for verification.
               </p>
+
+              {/* NOTE */}
+              <div className="border border-red-500/30 bg-red-500/10 rounded-sm p-4">
+                <p className="text-sm text-red-400 font-semibold uppercase tracking-wide">
+                  Important Note
+                </p>
+
+                <p className="text-sm text-neutral-300 mt-2 leading-relaxed">
+                  Minimum deposit amount is{" "}
+                  <span className="text-white font-bold">$20 USD</span>.
+                  Deposits below <span className="text-white font-bold">$20</span> may not be processed and
+                  the transferred assets can be permanently lost.
+                </p>
+              </div>
+
               <div className="flex items-center gap-4 bg-black p-4 rounded-sm border border-neutral-800 group">
                 <code className="text-xs font-mono text-yellow-500 break-all select-all flex-1">
                   {WALLET_ADDRESS}

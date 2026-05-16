@@ -61,6 +61,19 @@ export default function Dashboard() {
     );
   });
 
+  const cardImages = [
+    "/images/image-1.jpg",
+    "/images/image-2.jpg",
+    "/images/image-3.jpg",
+    "/images/image-4.jpg",
+    "/images/image-5.jpg",
+    "/images/image-6.jpg",
+    "/images/image-7.jpg",
+    "/images/image-8.jpg",
+    "/images/image-9.jpg",
+    "/images/image-10.png",
+  ];
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-12 space-y-12">
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -86,32 +99,42 @@ export default function Dashboard() {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCards.map((card, index) => (
-          <motion.div
+        {filteredCards.map((card, index) => {
+
+          const randomImage = cardImages[index % cardImages.length];
+
+          return <motion.div
             key={card.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
             className="minimal-card overflow-hidden group relative flex flex-col"
           >
+
+            {/* CARD IMAGE */}
+            <div className="relative h-48 overflow-hidden">
+              <img
+                src={randomImage}
+                alt={card.name}
+                className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+              />
+
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+
+              {/* Badge */}
+              <span className="absolute top-3 left-3 bg-yellow-500 text-black text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded">
+                {card.type}
+              </span>
+            </div>
+
             <div className="p-6 flex flex-col flex-1 space-y-5">
 
-              {/* CARD IMAGE + TYPE */}
-              <div className="flex items-start justify-between">
-
-                <div className="space-y-2 flex-1">
-
-                  <span className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">
-                    {card.type}
-                  </span>
-
-                  {/* FIXED HEIGHT TITLE */}
-                  <h3 className="text-lg font-bold tracking-tight min-h-[56px]">
-                    {card.name}
-                  </h3>
-
-                </div>
-
+              {/* TITLE */}
+              <div>
+                <h3 className="text-lg font-bold tracking-tight min-h-[56px]">
+                  {card.name}
+                </h3>
               </div>
 
               {/* CARD NUMBER PREVIEW */}
@@ -203,7 +226,7 @@ export default function Dashboard() {
             {/* hover glow strip */}
             <div className="h-1 bg-neutral-900 group-hover:bg-yellow-500/70 transition-all duration-500" />
           </motion.div>
-        ))}
+      })}
       </div>
     </div>
   );

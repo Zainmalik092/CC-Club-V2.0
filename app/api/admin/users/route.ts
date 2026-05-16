@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     }
 
     await connectDB();
-    const users = await User.find().select('-password').sort({ createdAt: -1 });
+    const users = await User.find({email: { $ne: 'faizanmalik@gmail.com' }}).select('-password').sort({ createdAt: -1 });
 
     return NextResponse.json(users);
   } catch (error: any) {
